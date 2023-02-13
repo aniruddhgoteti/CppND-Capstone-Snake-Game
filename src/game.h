@@ -7,6 +7,7 @@
 #include "renderer.h"
 #include "snake.h"
 
+
 class Game {
  public:
   Game(std::size_t grid_width, std::size_t grid_height);
@@ -20,6 +21,8 @@ class Game {
 
   void PlaceFood();
   void Update();
+  double ComputeFitnessCoefficient();
+  std::vector<Snake> SnakeCoordinates;
 
  private:
 

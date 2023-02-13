@@ -34,6 +34,7 @@ void Game::Run(Controller &controller, Renderer &renderer,
     int random_number = (randNumber % 4) + 1;
     controller.ChooseDirection(random_number);
     controller.HandleInput(running, snake);
+    SnakeCoordinates.emplace_back(snake);
     Update();
     renderer.Render(snake, food);
 
@@ -73,6 +74,11 @@ void Game::PlaceFood() {
       return;
     }
   }
+}
+
+double Game::ComputeFitnessCoefficient() {
+  double fitness = (std::abs(snake.head_x - food.x) + std::abs(snake.head_y - food.y));
+  return fitness;
 }
 
 void Game::Update() {
