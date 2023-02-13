@@ -2,6 +2,7 @@
 #include <iostream>
 #include "SDL.h"
 
+
 Game::Game(std::size_t grid_width, std::size_t grid_height)
     : snake(grid_width, grid_height),
       engine(dev()),
@@ -10,7 +11,14 @@ Game::Game(std::size_t grid_width, std::size_t grid_height)
   PlaceFood();
 }
 
-void Game::Run(Controller const &controller, Renderer &renderer,
+
+Uint32 callback( Uint32 interval, void* param )
+{
+
+    return 0;
+}
+
+void Game::Run(Controller &controller, Renderer &renderer,
                std::size_t target_frame_duration) {
   Uint32 title_timestamp = SDL_GetTicks();
   Uint32 frame_start;
@@ -20,9 +28,11 @@ void Game::Run(Controller const &controller, Renderer &renderer,
   bool running = true;
 
   while (running) {
-    frame_start = SDL_GetTicks();
 
     // Input, Update, Render - the main game loop.
+    int randNumber = rand();
+    int random_number = (randNumber % 4) + 1;
+    controller.ChooseDirection(random_number);
     controller.HandleInput(running, snake);
     Update();
     renderer.Render(snake, food);
@@ -74,7 +84,7 @@ void Game::Update() {
   int new_y = static_cast<int>(snake.head_y);
 
   // Check if there's food over here
-  if (food.x == new_x && food.y == new_y) {
+  if (food.x == new_x and food.y == new_y) {
     score++;
     PlaceFood();
     // Grow snake and increase speed.

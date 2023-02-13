@@ -3,39 +3,53 @@
 #include "SDL.h"
 #include "snake.h"
 
+constexpr std::size_t kGridWidth{32};
+constexpr std::size_t kGridHeight{32};
+
 void Controller::ChangeDirection(Snake &snake, Snake::Direction input,
                                  Snake::Direction opposite) const {
-  if (snake.direction != opposite || snake.size == 1) snake.direction = input;
+  if (snake.direction != opposite or snake.size == 1) snake.direction = input;
   return;
 }
 
-void Controller::HandleInput(bool &running, Snake &snake) const {
+void Controller::HandleInput(bool &running, Snake &snake) {
   SDL_Event e;
-  while (SDL_PollEvent(&e)) {
+
+  while (SDL_PollEvent(&e) or snake.alive) {
     if (e.type == SDL_QUIT) {
       running = false;
-    } else if (e.type == SDL_KEYDOWN) {
-      switch (e.key.keysym.sym) {
-        case SDLK_UP:
-          ChangeDirection(snake, Snake::Direction::kUp,
+    } else {
+      if (GetUp() == 1) { 
+         ChangeDirection(snake, Snake::Direction::kUp,
                           Snake::Direction::kDown);
-          break;
-
-        case SDLK_DOWN:
-          ChangeDirection(snake, Snake::Direction::kDown,
-                          Snake::Direction::kUp);
-          break;
-
-        case SDLK_LEFT:
-          ChangeDirection(snake, Snake::Direction::kLeft,
-                          Snake::Direction::kRight);
-          break;
-
-        case SDLK_RIGHT:
-          ChangeDirection(snake, Snake::Direction::kRight,
-                          Snake::Direction::kLeft);
-          break;
-      }
+                          std::cout << "Changed direction to Up!" << std::endl;
+                          return;}
+      else if (GetDown() == 1) {
+         ChangeDirection(snake, Snake::Direction::kDown,
+                          Snake::Direction::kUp); 
+                          std::cout << "Changed direction to Down!" << std::endl;
+                          return;}
+      else if (GetLeft() == 1) {
+         ChangeDirection(snake, Snake::Direction::kLeft,
+                          Snake::Direction::kRight); 
+                          std::cout << "Changed direction to Left!" << std::endl;
+                          return;}
+      else {
+         ChangeDirection(snake, Snake::Direction::kRight,
+                          Snake::Direction::kLeft); 
+                          std::cout << "Changed direction to Right!" << std::endl;
+                          return;}
     }
   }
+}
+
+void Controller::ChooseDirection(int random_number) {
+    if (random_number == 1)
+        {SetUp(1); SetDown(0); SetLeft(0); SetRight(0); return;}
+    else if (random_number == 2)
+        {SetDown(1); SetUp(0); SetLeft(0); SetRight(0); return;}
+    else if (random_number == 3)
+        {SetLeft(1); SetUp(0); SetDown(0); SetRight(0); return;}
+    else
+        {SetRight(1); SetDown(0); SetLeft(0); SetUp(0); return;}
 }

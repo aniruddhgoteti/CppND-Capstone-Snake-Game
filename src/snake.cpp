@@ -14,7 +14,7 @@ void Snake::Update() {
 
   // Update all of the body vector items if the snake head has moved to a new
   // cell.
-  if (current_cell.x != prev_cell.x || current_cell.y != prev_cell.y) {
+  if (current_cell.x != prev_cell.x or current_cell.y != prev_cell.y) {
     UpdateBody(current_cell, prev_cell);
   }
 }
@@ -55,9 +55,9 @@ void Snake::UpdateBody(SDL_Point &current_head_cell, SDL_Point &prev_head_cell) 
     size++;
   }
 
-  // Check if the snake has died.
+  // If the snake eats itself, it dies
   for (auto const &item : body) {
-    if (current_head_cell.x == item.x && current_head_cell.y == item.y) {
+    if (current_head_cell.x == item.x and current_head_cell.y == item.y){
       alive = false;
     }
   }
@@ -67,11 +67,11 @@ void Snake::GrowBody() { growing = true; }
 
 // Inefficient method to check if cell is occupied by snake.
 bool Snake::SnakeCell(int x, int y) {
-  if (x == static_cast<int>(head_x) && y == static_cast<int>(head_y)) {
+  if (x == static_cast<int>(head_x) and y == static_cast<int>(head_y)) {
     return true;
   }
   for (auto const &item : body) {
-    if (x == item.x && y == item.y) {
+    if (x == item.x and y == item.y) {
       return true;
     }
   }

@@ -38,6 +38,7 @@ Renderer::~Renderer() {
   SDL_Quit();
 }
 
+
 void Renderer::Render(Snake const snake, SDL_Point const &food) {
   SDL_Rect block;
   block.w = screen_width / grid_width;
