@@ -8,10 +8,12 @@ class Controller {
   void HandleInput(bool &running, Snake &snake);
   void ChooseDirection(int random_number);
 
+  //getters
   int GetUp() {return up_;}
   int GetDown() {return down_;}
   int GetLeft() {return left_;}
   int GetRight() {return right_;}
+  //setters
   void SetUp(int up) {up_ = up;}
   void SetDown(int down) {down_ = down;}
   void SetLeft(int left) {left_ = left;}

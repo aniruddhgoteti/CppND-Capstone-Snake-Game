@@ -5,11 +5,13 @@
 
 class Node {
     public:
-       Node* parent = nullptr;
+        //getters
        int GetX() {return x_;}
        int GetY() {return y_;}
-       void SetX(int x) {x_ = x;}
-       void SetY(int y) {y_ = y;}
+       //setters
+       void SetX(int x) {if(x >=0) x_ = x;} // coordinates cannot be greater than 0
+       void SetY(int y) {if(y >=0) y_ = y;} // coordinates cannot be greater than 0
+
        int distance;
        bool visited;
        
@@ -22,7 +24,7 @@ class Node {
 
 class SmartBot {
     public:
-        ~SmartBot() {};
+        ~SmartBot() {std::cout << "Djikstra algorithm finished for the current state" << std::endl; nodelist.clear(); path_points.clear();};
 
         std::vector<SDL_Point> ApplyDjikstra(const SDL_Point &start_point, const SDL_Point &end_point);
 

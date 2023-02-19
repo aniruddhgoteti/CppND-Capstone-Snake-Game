@@ -1,12 +1,11 @@
-# CPPND: Capstone Snake Game Example
+# CPPND: Dijkstra Algorithm adapting to Random Bot
 
-This is a starter repo for the Capstone project in the [Udacity C++ Nanodegree Program](https://www.udacity.com/course/c-plus-plus-nanodegree--nd213). The code for this repo was inspired by [this](https://codereview.stackexchange.com/questions/212296/snake-game-in-c-with-sdl) excellent StackOverflow post and set of responses.
+Dijkstra's algorithm is also known as the shortest path algorithm. It is an algorithm used to find the shortest path between nodes of the graph. The algorithm creates the tree of the shortest paths from the starting source vertex from all other points in the graph. It differs from the minimum spanning tree as the shortest distance between two vertices may not be included in all the vertices of the graph. The algorithm works by building a set of nodes that have a minimum distance from the source. Here, Dijkstra's algorithm uses a greedy approach to solve the problem and find the best solution. (Source: https://favtutor.com/blogs/dijkstras-algorithm-cpp )
 
-<img src="snake_game.gif"/>
+**Note**: The game is not perfect yet and the aglorithm doesnt yet adapt to the random bot perfectly, but this is a good example concerning good C++ programming practices.
 
-The Capstone Project gives you a chance to integrate what you've learned throughout this program. This project will become an important part of your portfolio to share with current and future colleagues and employers.
+<img src="snake_game_dijsktra.gif"/>
 
-In this project, you can build your own C++ application or extend this Snake game, following the principles you have learned throughout this Nanodegree Program. This project will demonstrate that you can independently create applications using a wide range of C++ features.
 
 ## Dependencies for Running Locally
 * cmake >= 3.7
@@ -30,6 +29,17 @@ In this project, you can build your own C++ application or extend this Snake gam
 3. Compile: `cmake .. && make`
 4. Run it: `./SnakeGame`.
 
+## Rubrics Completed
+* The project demonstrates an understanding of C++ functions and control structures
+  > rubric demonstrated in smartbot.cpp and controller.cpp
+* The project uses Object Oriented Programming techniques
+  > rubric demonstated in smartbot.h, controller.h, controller.cpp and smartbot.cpp where class methods are used
+* Classes use appropriate access specifiers for class members.
+  > rubric demonstated in smartbot.h and controller.h where access specifiers are used
+* The project uses destructors appropriately.
+  > Node in smartbot.cpp has its own class destructor which clears the vectors at destruction, thereby freeing the memory.
+* The project uses smart pointers instead of raw pointers.
+  > bot is a smart pointer declared and used in game.h and game.cpp
 
 ## CC Attribution-ShareAlike 4.0 International
 
