@@ -1,38 +1,40 @@
-#include "game.h"
-#include "SDL.h"
 #include <memory>
 #include <vector>
-#include <map>
-#include "controller.h"
-#include "renderer.h"
-#include "snake.h"
+#include "SDL.h"
+#include <iostream>
+
+class Node {
+    public:
+       Node* parent = nullptr;
+       int GetX() {return x_;}
+       int GetY() {return y_;}
+       void SetX(int x) {x_ = x;}
+       void SetY(int y) {y_ = y;}
+       int distance;
+       bool visited;
+       
+
+    private:
+    int x_{0};
+    int y_{0};
+};
+
 
 class SmartBot {
-public:
-    SmartBot(double rank, std::size_t grid_width, std::size_t grid_height);
-    ~SmartBot() {};
+    public:
+        ~SmartBot() {};
 
-    void Run(Controller const &controller, Renderer &renderer,
-        std::size_t target_frame_duration, Snake &snake);
-    void RunGeneticAlgorithm(Controller &controller, Renderer &renderer,
-        std::size_t target_frame_duration);
+        std::vector<SDL_Point> ApplyDjikstra(const SDL_Point &start_point, const SDL_Point &end_point);
 
-    void SetRank(double rank) {rank_ = rank;}
-    double GetRank() {return rank_;}
+    private:
+        int GetDistanceFromFood(const int start_point_x, const int start_point_y, const int end_point_x, const int end_point_y);
+        int GetMinimumDistance();
+        int CalculateDistanceFromFood(const int start_point_x, const int start_point_y, const int end_point_x, const int end_point_y);
+        void printSolution();
 
-    Game game;
-    Controller control;
-
-    std::vector<std::unique_ptr<SmartBot>> Solutions;
-    std::vector<double> Ranks;
-    std::map<double, Snake> RanksMap;
-
-private: 
-    double rank_{0.};
-
-    void RunFitnessFunctionOnSolutions();
-    void SortSolutionsByRank();
-    double ComputeRank();
-    void SortRanksMap(std::map<double, Snake> &PassedMap);
-    std::map<double, Snake> CreateRanksMap();
+        std::vector<SDL_Point> path_points;
+        int Graph[32][32];
+        SDL_Point path;
+        Node node;
+        std::vector<Node> nodelist;
 };

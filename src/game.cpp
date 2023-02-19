@@ -4,18 +4,11 @@
 
 
 Game::Game(std::size_t grid_width, std::size_t grid_height)
-    : snake(grid_width, grid_height),
+    : snake(grid_width, grid_height), smartbot(),
       engine(dev()),
       random_w(0, static_cast<int>(grid_width - 1)),
       random_h(0, static_cast<int>(grid_height - 1)) {
   PlaceFood();
-}
-
-
-Uint32 callback( Uint32 interval, void* param )
-{
-
-    return 0;
 }
 
 void Game::Run(Controller &controller, Renderer &renderer,
@@ -28,15 +21,22 @@ void Game::Run(Controller &controller, Renderer &renderer,
   bool running = true;
 
   while (running) {
-
+    frame_start = SDL_GetTicks();
     // Input, Update, Render - the main game loop.
     int randNumber = rand();
     int random_number = (randNumber % 4) + 1;
     controller.ChooseDirection(random_number);
     controller.HandleInput(running, snake);
-    SnakeCoordinates.emplace_back(snake);
     Update();
-    renderer.Render(snake, food);
+    bot.reset(new SmartBot());
+
+    start_point.x = snake.head_x;
+    start_point.y = snake.head_y;
+    end_point.x = food.x;
+    end_point.y = food.y;
+
+    auto path = bot->ApplyDjikstra(start_point, end_point);
+    renderer.Render(snake, food, path);
 
     frame_end = SDL_GetTicks();
 
@@ -74,11 +74,6 @@ void Game::PlaceFood() {
       return;
     }
   }
-}
-
-double Game::ComputeFitnessCoefficient() {
-  double fitness = (std::abs(snake.head_x - food.x) + std::abs(snake.head_y - food.y));
-  return fitness;
 }
 
 void Game::Update() {

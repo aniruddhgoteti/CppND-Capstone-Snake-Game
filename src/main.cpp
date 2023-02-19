@@ -2,7 +2,6 @@
 #include "controller.h"
 #include "game.h"
 #include "renderer.h"
-#include "smartbot.h"
 
 int main() {
   constexpr std::size_t kFramesPerSecond{60};
@@ -14,8 +13,10 @@ int main() {
 
   Renderer renderer(kScreenWidth, kScreenHeight, kGridWidth, kGridHeight);
   Controller controller;
-  Snake snake(kGridWidth, kGridHeight);
-  SmartBot bot(0., kGridWidth, kGridHeight);
-  bot.RunGeneticAlgorithm(controller, renderer, kMsPerFrame);
+  Game game(kGridWidth, kGridHeight);
+  game.Run(controller, renderer, kMsPerFrame);
+  std::cout << "Game has terminated successfully!" << std::endl;
+  std::cout << "Score: " << game.GetScore() << std::endl;
+  std::cout << "Size: " << game.GetSize() << std::endl;
   return 0;
 }

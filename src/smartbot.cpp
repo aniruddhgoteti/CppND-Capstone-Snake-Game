@@ -1,105 +1,79 @@
-#include "smartbot.h"
-#include "snake.h"
-#include "game.h"
-#include "controller.h"
-#include <thread>
-#include <chrono>
 #include <iostream>
 #include <vector>
-#include <random>
 #include <algorithm>
-#include <assert.h>
+#include "SDL.h"
+#include <limits.h>
+#include "smartbot.h"
 
+# define BOARD_SIZE 32
 
-SmartBot::SmartBot(double rank, std::size_t grid_width, std::size_t grid_height) 
-         : game(grid_width, grid_height), rank_(rank) {}
-
-
-
-double SmartBot::ComputeRank() {
-  auto fitness = game.ComputeFitnessCoefficient();
-  double rank = (fitness == 0) ? 99999 : std::abs(1.0/fitness);
-  SetRank(rank);
+int SmartBot::CalculateDistanceFromFood(const int start_point_x, const int start_point_y, const int end_point_x, const int end_point_y) {
+    return abs(end_point_x - start_point_x) + abs(end_point_y - start_point_y);
 }
 
-void SmartBot::RunFitnessFunctionOnSolutions() {
-  for (auto &solution : SmartBot::Solutions) {
-    solution->ComputeRank();
+// A utility function to find the vertex with minimum
+// distance value, from the set of vertices not yet included
+int SmartBot::GetMinimumDistance() {
+  int min = INT_MAX;
+  int min_index;
+  
+  for(auto &node: nodelist) {
+  if ((!node.visited) and node.distance < min) {
+    min = node.distance;
+    min_index = &node - &nodelist[0];
+  }}
+
+  return min_index;
+}
+
+
+std::vector<SDL_Point> SmartBot::ApplyDjikstra(const SDL_Point &start_point, const SDL_Point &end_point) {
+    nodelist.clear();
+    path_points.clear();
+
+
+    for(int i = 0; i < BOARD_SIZE; i++) {
+        for (int j = 0; j < BOARD_SIZE; j++) {
+          node.parent = nullptr;
+          node.distance = INT_MAX;
+          node.visited = false;
+          node.SetX(i);
+          node.SetY(j); 
+          nodelist.emplace_back(node);
+
+          Graph[i][j] = CalculateDistanceFromFood(i, j, end_point.x, end_point.y);
+        }
+    }
+
+    
+    for(auto &node : nodelist) {
+      if(node.GetX() == start_point.x and node.GetY() == start_point.y) {
+        node.distance = 0;
+      }
+    }
+
+  
+    for(int i = 0; i < nodelist.size() - 1; i++) {
+        auto min_index = GetMinimumDistance();
+        nodelist[min_index].visited = true;
+        for(int visit = 0; visit < nodelist.size(); visit++) {
+           if ((!nodelist[visit].visited) and Graph[nodelist[min_index].GetX()][visit] and (nodelist[min_index].distance != INT_MAX)
+                and nodelist[min_index].distance + Graph[nodelist[min_index].GetX()][visit] < nodelist[visit].distance) {
+                        nodelist[visit].parent = &nodelist[min_index];
+                        nodelist[visit].distance = nodelist[visit].distance + Graph[nodelist[min_index].GetX()][visit];
+                }
+          }       
+    }
+
+ 
+  std::sort(nodelist.begin(), nodelist.end(), [](const Node &a, const Node &b){ return (a.distance) < (b.distance); });
+  std::vector<Node> v_best(nodelist.begin(), nodelist.begin() + 50);
+
+  for (auto &node: v_best) {
+    path.x = node.GetX();
+    path.y = node.GetY();
+    path_points.emplace_back(path);
   }
+  return path_points;
 }
 
-void SmartBot::SortSolutionsByRank() {
-  std::sort(SmartBot::Solutions.begin(), SmartBot::Solutions.end(), [](const auto &lhs, const auto &rhs) {
-    return lhs->GetRank() > rhs->GetRank();
-  });
-}
-
-
-bool comparemap(std::pair<double, Snake>& a,
-        std::pair<double, Snake>& b)
-{
-    return a.first > b.first;
-}
-
-
-void SmartBot::SortRanksMap(std::map<double, Snake> &PassedMap) {
-   std::vector<std::pair <double, Snake> > pairRanksVec;
-   std::map<double, Snake> sortedRanksMap;
-   
-   for ( auto& it : PassedMap) {
-      pairRanksVec.emplace_back( it );
-   }
-   PassedMap.clear();
-   std::sort(pairRanksVec.begin(), pairRanksVec.end(), comparemap);
-   
-   for ( auto& it : pairRanksVec ) {
-      PassedMap.insert({ it.first, it.second });
-   }
-   pairRanksVec.clear();
-}
-
-
-std::map<double, Snake> SmartBot::CreateRanksMap() {
-  // create map
-  std::transform(Ranks.begin(),Ranks.end(), game.SnakeCoordinates.begin(), std::inserter(RanksMap, RanksMap.end()), [](double ranks, Snake snake)
-   {
-      return std::make_pair(ranks, snake);
-  });
-}
-
-void SmartBot::RunGeneticAlgorithm(Controller  &controller, Renderer &renderer,
-               std::size_t target_frame_duration) {
-
-  constexpr std::size_t kGridWidth{32};
-  constexpr std::size_t kGridHeight{32};
-
-  game.Run(controller, renderer, target_frame_duration);
-  std::cout << "Game has terminated successfully!" << std::endl;
-  std::cout << "Score: " << game.GetScore() << std::endl;
-  std::cout << "Size: " << game.GetSize() << std::endl;
-
-  for (auto &snake : game.SnakeCoordinates)
-  {
-    Solutions.emplace_back(new SmartBot(GetRank(), kGridWidth, kGridHeight));
-  }
-
-  RunFitnessFunctionOnSolutions();
-
-  for (auto &sol : Solutions)
-  {
-    Ranks.emplace_back(sol->GetRank());
-  }
-
-  SortSolutionsByRank();
-
-  assert(Ranks.size() == game.SnakeCoordinates.size());
-  RanksMap = CreateRanksMap();
-  //Ranks.clear();
-  //game.SnakeCoordinates.clear();
-
-  //SortRanksMap(RanksMap);
-
-  for (auto &it: Ranks) {
-    std::cout <<it << std::endl;
-  }
-}
